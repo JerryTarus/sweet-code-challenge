@@ -1,11 +1,13 @@
 from flask import Flask, make_response, jsonify
 from flask_restful import Api, Resource, reqparse
+from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
 from models import db, Vendor, Sweet, Vendor_Sweets
 import os
 from flask_cors import CORS
 
 app = Flask(__name__)
+migrate = Migrate(app, db)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), 'app.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 

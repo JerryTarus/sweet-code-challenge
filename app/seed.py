@@ -18,7 +18,6 @@ def seed_data():
 
     # Refactored this code to use list comprehensions for instances
 
-
     vendors = [Vendor(name=name) for name in vendor_names]
     sweets = [Sweet(name=name) for name in sweet_names]
 
