@@ -1,4 +1,6 @@
-from models import Vendor, Sweet, Vendor_Sweets
+from models import Vendor, Sweet, VendorSweet
+
+
 from app import app, db
 
 

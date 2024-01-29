@@ -1,5 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL
+from sqlalchemy.orm import relationship, validates
 from datetime import datetime
+
 
 db = SQLAlchemy()
 
@@ -11,6 +14,9 @@ class Vendor(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, server_default=db.func.now(), onupdate=datetime.utcnow)
     vendor_sweets = db.relationship('VendorSweet', backref='vendor', lazy=True)
+
+    def __repr__(self):
+        return f'<vendor {self.name}>'
 
 # add any models you may need. 
     
