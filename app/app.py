@@ -15,7 +15,7 @@ db.init_app(app)
 
 @app.route('/')
 def home():
-    return ''
+    return 'Welcome to Crotonn Pies'
 
 
 if __name__ == '__main__':
