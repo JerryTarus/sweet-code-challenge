@@ -220,4 +220,3 @@ the appropriate HTTP status code:
   "error": "VendorSweet not found"
 }
 ```
-# sweet-code-challenge
