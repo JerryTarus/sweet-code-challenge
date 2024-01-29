@@ -18,5 +18,17 @@ def home():
     return 'Welcome to Crotonn Pies'
 
 
+# GET /vendors
+@app.route('/vendors')
+def get_vendors():
+    vendors = Vendor.query.all()
+    vendor_data = [{'id': vendor.id, 'name': vendor.name} for vendor in vendors]
+    return jsonify(vendor_data)
+
+
+
+
+
+
 if __name__ == '__main__':
     app.run(port=5555)
