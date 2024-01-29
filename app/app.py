@@ -58,6 +58,42 @@ def get_sweet(sweet_id):
         return jsonify({'error': 'Sweet not found'}), 404
 
 
+# POST /vendor_sweets
+@app.route('/vendor_sweets', methods=['POST'])
+def create_vendor_sweet():
+    data = request.get_json()
+    try:
+        price = float(data['price'])
+        vendor_id = int(data['vendor_id'])
+        sweet_id = int(data['sweet_id'])
+    except (KeyError, ValueError):
+        return jsonify({'errors': ['Invalid input data']}), 400
+
+    vendor = Vendor.query.get(vendor_id)
+    sweet = Sweet.query.get(sweet_id)
+
+    if vendor and sweet:
+        vendor_sweet = VendorSweet(price=price, sweets_id=sweet_id, vendor_id=vendor_id)
+        db.session.add(vendor_sweet)
+        db.session.commit()
+
+        response_data = {'id': vendor_sweet.id, 'name': sweet.name, 'price': vendor_sweet.price}
+        return jsonify(response_data), 201
+    else:
+        return jsonify({'errors': ['Vendor or Sweet not found']}), 404
+
+# DELETE /vendor_sweets/:id
+@app.route('/vendor_sweets/<int:vendor_sweet_id>', methods=['DELETE'])
+def delete_vendor_sweet(vendor_sweet_id):
+    vendor_sweet = VendorSweet.query.get(vendor_sweet_id)
+    if vendor_sweet:
+        db.session.delete(vendor_sweet)
+        db.session.commit()
+        return jsonify({})
+    else:
+        return jsonify({'error': 'VendorSweet not found'}), 404
+
+
 
 
 if __name__ == '__main__':
