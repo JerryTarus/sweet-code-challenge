@@ -1,49 +1,50 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL
+from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, func, ForeignKey
 from sqlalchemy.orm import relationship, validates
 from datetime import datetime
-
 
 db = SQLAlchemy()
 
 class Vendor(db.Model):
     __tablename__ = 'vendor'
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, server_default=db.func.now())
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, server_default=db.func.now(), onupdate=datetime.utcnow)
-    vendor_sweets = db.relationship('VendorSweet', backref='vendor', lazy=True)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(255), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, server_default=func.now())
+    updated_at = Column(DateTime, default=datetime.utcnow, server_default=func.now(), onupdate=datetime.utcnow)
+    sweets = relationship('Vendor_Sweets', back_populates='vendor')
 
     def __repr__(self):
-        return f'<vendor {self.name}>'
+        return f'<Vendor {self.name}>'
 
-# add any models you may need. 
-    
-class Sweet(db.Model):
-    __tablename__ = 'sweet'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, server_default=db.func.now())
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, server_default=db.func.now(), onupdate=datetime.utcnow)
-    vendor_sweets = db.relationship('VendorSweet', backref='sweet', lazy=True)
-
-class VendorSweet(db.Model):
+class Vendor_Sweets(db.Model):
     __tablename__ = 'vendor_sweets'
-    id = db.Column(db.Integer, primary_key=True)
-    price = db.Column(db.Float, nullable=False)
-    sweets_id = db.Column(db.Integer, db.ForeignKey('sweet.id'), nullable=False)
-    vendor_id = db.Column(db.Integer, db.ForeignKey('vendor.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, server_default=db.func.now())
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, server_default=db.func.now(), onupdate=datetime.utcnow)
+
+    id = Column(Integer, primary_key=True)
+    price = Column(DECIMAL, nullable=False)
+    sweets_id = Column(Integer, ForeignKey('sweets.id'), nullable=False)
+    vendor_id = Column(Integer, ForeignKey('vendor.id'), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, server_default=func.now())
+    updated_at = Column(DateTime, default=datetime.utcnow, server_default=func.now(), onupdate=datetime.utcnow)
+    sweet = relationship('Sweet', back_populates='vendor')
+    vendor = relationship('Vendor', back_populates='sweets')
 
     @validates('price')
-    def validate_price(self, key, value):
-        if not value:
-            raise ValueError('Price cannot be blank')
-        if value < 0:
-            raise ValueError('Price cannot be a negative number')
-        return value
+    def validates_price(self, key, price):
+        if not price:
+            raise ValueError("Price cannot be blank")
 
+        price = float(price)
+        if price < 0:
+            raise ValueError("Price cannot be a negative number")
 
+        return price
 
+class Sweet(db.Model):
+    __tablename__ = 'sweets'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(255), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, server_default=func.now())
+    updated_at = Column(DateTime, default=datetime.utcnow, server_default=func.now(), onupdate=datetime.utcnow)
+    vendor = relationship('Vendor_Sweets', back_populates='sweet')

@@ -1,52 +1,36 @@
-from models import Vendor, Sweet, VendorSweet
-
-
+from models import Vendor, Sweet, Vendor_Sweets
 from app import app, db
 
 
+
 def seed_data():
-
-    vendors = [
-        Vendor(name='Sweet Delights'),
-        Vendor(name='Candy Corner'),
-        Vendor(name='Sugar Rush'),
-        Vendor(name='Tasty Treats'),
-        Vendor(name='Delicious Delicacies'),
-        Vendor(name='Confectionery Castle'),
-        Vendor(name='Dessert Den'),
-        Vendor(name='Pastry Palace'),
-        Vendor(name='Bakery Bazaar'),
-        Vendor(name='Treat Tower'),
+    vendor_names = [
+        'Sweet Delights', 'Candy Corner', 'Sugar Rush', 'Tasty Treats', 'Delicious Delicacies',
+        'Confectionery Castle', 'Dessert Den', 'Pastry Palace', 'Bakery Bazaar', 'Treat Tower'
     ]
 
-    sweets = [
-        Sweet(name='Chocolate Truffle'),
-        Sweet(name='Vanilla Cupcake'),
-        Sweet(name='Strawberry Tart'),
-        Sweet(name='Blueberry Muffin'),
-        Sweet(name='Raspberry Cheesecake'),
-        Sweet(name='Lemon Loaf'),
-        Sweet(name='Caramel Cookie'),
-        Sweet(name='Pistachio Pastry'),
-        Sweet(name='Almond Biscotti'),
-        Sweet(name='Coconut Macaroon'),
+    sweet_names = [
+        'Chocolate Truffle', 'Vanilla Cupcake', 'Strawberry Tart', 'Blueberry Muffin', 
+        'Raspberry Cheesecake', 'Lemon Loaf', 'Caramel Cookie', 'Pistachio Pastry', 
+        'Almond Biscotti', 'Coconut Macaroon'
     ]
 
-   
-    db.session.add_all(vendors)
-    db.session.add_all(sweets)
+
+    # Refactored this code to use list comprehensions for instances
+
+
+    vendors = [Vendor(name=name) for name in vendor_names]
+    sweets = [Sweet(name=name) for name in sweet_names]
+
+    db.session.add_all(vendors + sweets)
     db.session.commit()
 
-  
-    vendor_sweets = []
-    for i in range(10):
-        price = f'{i+1}.99'
-        sweet_id = sweets[i].id
-        vendor_id = vendors[i].id
-        vendor_sweet = Vendor_Sweets(price=price, sweets_id=sweet_id, vendor_id=vendor_id)
-        vendor_sweets.append(vendor_sweet)
+    # Simplified this loop here with enumerate and zip
+    vendor_sweets = [
+        Vendor_Sweets(price=f'{i+1}.99', sweets_id=sweet.id, vendor_id=vendor.id)
+        for i, (sweet, vendor) in enumerate(zip(sweets, vendors))
+    ]
 
-  
     db.session.add_all(vendor_sweets)
     db.session.commit()
 
